@@ -1,0 +1,13 @@
+HOW TO USE THIS CLASS
+
+First, make an instance of the FASTAFile class. To specify a file to open, you
+can either supply a filename to the constructor of the class (optional), or you
+can use the open() function.
+  - open() will return true or false depending on success;
+  - the constructor will throw a std::runtime_error upon failure.
+
+Next, you can use the get_sequence() function to grab a sequence of nucleotides.
+This FASTA file will then extract the sequence at that start and end point,
+which will ignore the first line. There is an optional third parameter which is
+a bool. If true, it will return the sequence in all capitals. If false, it will
+return in whatever case it's found in the file.
