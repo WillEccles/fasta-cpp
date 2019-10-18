@@ -55,14 +55,23 @@ class FASTAFile {
         bool open(const std::string& filename) {
             file = filename;
             infile = std::ifstream(file);
-            // now we need to chop the first line out and figure out how long it is
+            if (!infile) return false;
             std::string tmp;
-            std::getline(infile, tmp);
-            header_len = tmp.size() + 1; // +1 for newline character
-            // now get the length of each line for math later on
-            std::getline(infile, tmp);
-            line_nt = tmp.size(); // this is length in nt, not counting newline
-            return (bool)infile;
+            std::string head = "";
+            int lc = 0;
+            // deal with comments at the top of the file
+            while (std::getline(infile, tmp)) {
+                if (tmp[0] != '>' && tmp[1] != ';') {
+                    // line length
+                    line_nt = tmp.size();
+                    break;
+                } else {
+                    head += tmp;
+                    lc++;
+                }
+            }
+            header_len = head.size() + lc; // +1 for newline character
+            return true;
         }
 
         // closes the file
