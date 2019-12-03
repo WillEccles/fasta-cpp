@@ -58,21 +58,6 @@ class FASTAFile {
             file = filename;
             infile = std::ifstream(file);
             if (!infile) return false;
-            std::string tmp;
-            std::string head = "";
-            int lc = 0;
-            // deal with comments at the top of the file
-            while (std::getline(infile, tmp)) {
-                if (tmp[0] != '>' && tmp[1] != ';') {
-                    // line length
-                    line_nt = tmp.size();
-                    break;
-                } else {
-                    head += tmp;
-                    lc++;
-                }
-            }
-            header_len = head.size() + lc; // +1 for newline character
             return true;
         }
 
@@ -91,10 +76,15 @@ class FASTAFile {
             infile.seekg(0);
             std::size_t count = 0;
             std::size_t curpos = 0;
-            while (std::getline(infile, tmpline) && curpos != start) {
+            while (curpos != start && std::getline(infile, tmpline)) {
                 if ('>' != tmpline[0]) {
-                    for (char c : tmpline) {
-                        if (curpos + 1 == start) { break; }
+                    char c;
+                    for (int i = 0; i < tmpline.size(); i++) {
+                        c = tmpline[i];
+                        if (curpos + 1 == start) {
+                            infile.seekg(infile.tellg() - (tmpline.size() - i));
+                            break;
+                        }
                         if (IS_VALID(c)) {
                             curpos++;
                         }
@@ -122,8 +112,6 @@ class FASTAFile {
         }
 
     private:
-        std::size_t header_len;
-        std::size_t line_nt;
         std::string file;
         std::ifstream infile;
 };
