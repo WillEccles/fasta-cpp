@@ -88,7 +88,7 @@ class FASTAFile {
             std::string ret;
             std::string tmpline;
             char tmp;
-            infile.seekg(seq_start(start));
+            infile.seekg(0);
             std::size_t count = 0;
             std::size_t curpos = 0;
             while (std::getline(infile, tmpline) && curpos != start) {
