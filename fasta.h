@@ -79,10 +79,10 @@ class FASTAFile {
             while (curpos != start && std::getline(infile, tmpline)) {
                 if ('>' != tmpline[0]) {
                     char c;
-                    for (int i = 0; i < tmpline.size(); i++) {
+                    for (std::size_t i = 0; i < tmpline.size(); i++) {
                         c = tmpline[i];
                         if (curpos + 1 == start) {
-                            infile.seekg(infile.tellg() - (tmpline.size() - i));
+                            infile.seekg((std::size_t)infile.tellg() - (tmpline.size() - i));
                             break;
                         }
                         if (IS_VALID(c)) {
