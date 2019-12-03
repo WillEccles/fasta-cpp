@@ -35,8 +35,11 @@
 // Macro to convert a character to uppercase
 #define TO_UPPER(c) (((c) >= 'a' && (c) <= 'z') ? ((c) - ('a' - 'A')) : (c))
 
-// Valid codes. Source: Wikipedia
-const char* VALID_CODES = "AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz*-";
+// all letters and * and -
+#define IS_VALID(c) (((c) >= 'A' && (c) <= 'Z') || ((c) >= 'a' && (c) <= 'Z') || ((c) == '-') || ((c) == '*'))
+
+// check if a char is EOF
+#define IS_EOF(c) ((c) == std::ifstream::traits_type::eof())
 
 class FASTAFile {
     public:
@@ -83,17 +86,30 @@ class FASTAFile {
         // 'caps' defaults to false. If specified, this uppercases all nucleotides
         std::string get_sequence(std::size_t start, std::size_t end, bool caps = false) {
             std::string ret;
+            std::string tmpline;
             char tmp;
             infile.seekg(seq_start(start));
             std::size_t count = 0;
+            std::size_t curpos = 0;
+            while (std::getline(infile, tmpline) && curpos != start) {
+                if ('>' != tmpline[0]) {
+                    for (char c : tmpline) {
+                        if (curpos + 1 == start) { break; }
+                        if (IS_VALID(c)) {
+                            curpos++;
+                        }
+                    }
+                }
+            }
+
             while (count < (end - start) + 1) {
                 tmp = infile.get();
 
-                if (tmp == std::ifstream::traits_type::eof()) {
+                if (IS_EOF(tmp)) {
                     throw std::runtime_error("End coordinate out of bounds");
                 }
 
-                if (nullptr != std::strchr(VALID_CODES, tmp)) {
+                if (IS_VALID(tmp)) {
                     if (caps) {
                         ret += TO_UPPER(tmp);
                     } else {
@@ -110,11 +126,6 @@ class FASTAFile {
         std::size_t line_nt;
         std::string file;
         std::ifstream infile;
-
-        // get the *actual* starting byte to seek to
-        inline std::size_t seq_start(std::size_t start) {
-            return (header_len + ((start / line_nt) * (line_nt + 1)) + (start % line_nt)) - 1;
-        }
 };
 
 #endif /* FASTA_H */
