@@ -36,7 +36,7 @@
 #define TO_UPPER(c) (((c) >= 'a' && (c) <= 'z') ? ((c) - ('a' - 'A')) : (c))
 
 // all letters and * and -
-#define IS_VALID(c) (((c) >= 'A' && (c) <= 'Z') || ((c) >= 'a' && (c) <= 'Z') || ((c) == '-') || ((c) == '*'))
+#define IS_VALID(c) (((c) >= 'A' && (c) <= 'Z') || ((c) >= 'a' && (c) <= 'z') || ((c) == '-') || ((c) == '*'))
 
 // check if a char is EOF
 #define IS_EOF(c) ((c) == std::ifstream::traits_type::eof())
