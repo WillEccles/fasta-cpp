@@ -72,7 +72,6 @@ class FASTAFile {
             std::size_t count = 0;
             std::size_t curpos = 0;
             infile.seekg(start);
-#if 0
             while (curpos+1 != start && std::getline(infile, tmpline)) {
                 if ('>' != tmpline[0]) {
                     char c;
@@ -82,13 +81,12 @@ class FASTAFile {
                             infile.seekg((std::size_t)infile.tellg() - (tmpline.size() - i));
                             break;
                         }
-                        if (IS_VALID(c)) {
+                        if (std::isprint(c)) {
                             curpos++;
                         }
                     }
                 }
             }
-#endif
 
             while (count < (end - start) + 1) {
                 tmp = infile.get();
