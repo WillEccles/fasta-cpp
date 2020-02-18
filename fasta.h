@@ -31,12 +31,7 @@
 #include <cstring>
 #include <stdexcept>
 #include <iostream>
-
-// Macro to convert a character to uppercase
-#define TO_UPPER(c) (((c) >= 'a' && (c) <= 'z') ? ((c) - ('a' - 'A')) : (c))
-
-// all letters and * and -
-#define IS_VALID(c) (((c) >= 'A' && (c) <= 'Z') || ((c) >= 'a' && (c) <= 'z') || ((c) == '-') || ((c) == '*'))
+#include <cctype>
 
 // check if a char is EOF
 #define IS_EOF(c) ((c) == std::ifstream::traits_type::eof())
@@ -76,6 +71,8 @@ class FASTAFile {
             infile.seekg(0);
             std::size_t count = 0;
             std::size_t curpos = 0;
+            infile.seekg(start);
+#if 0
             while (curpos+1 != start && std::getline(infile, tmpline)) {
                 if ('>' != tmpline[0]) {
                     char c;
@@ -91,6 +88,7 @@ class FASTAFile {
                     }
                 }
             }
+#endif
 
             while (count < (end - start) + 1) {
                 tmp = infile.get();
@@ -99,9 +97,9 @@ class FASTAFile {
                     throw std::runtime_error("End coordinate out of bounds");
                 }
 
-                if (IS_VALID(tmp)) {
+                if (std::isprint(tmp)) {
                     if (caps) {
-                        ret += TO_UPPER(tmp);
+                        ret += std::toupper(tmp);
                     } else {
                         ret += tmp;
                     }
